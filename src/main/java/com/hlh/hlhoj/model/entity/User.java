@@ -74,6 +74,19 @@ public class User implements Serializable {
     private Date updateTime;
 
     /**
+     * 班级
+     */
+    private Integer classNum;
+
+    /**
+     * 电话号
+     */
+    private String phoneNumber;
+    /**
+     * 教师申请
+     */
+    private Integer isTeacher;
+    /**
      * 是否删除
      */
     @TableLogic

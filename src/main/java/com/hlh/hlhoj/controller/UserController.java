@@ -10,13 +10,9 @@ import com.hlh.hlhoj.config.WxOpenConfig;
 import com.hlh.hlhoj.constant.UserConstant;
 import com.hlh.hlhoj.exception.BusinessException;
 import com.hlh.hlhoj.exception.ThrowUtils;
-import com.hlh.hlhoj.model.dto.user.UserAddRequest;
-import com.hlh.hlhoj.model.dto.user.UserLoginRequest;
-import com.hlh.hlhoj.model.dto.user.UserQueryRequest;
-import com.hlh.hlhoj.model.dto.user.UserRegisterRequest;
-import com.hlh.hlhoj.model.dto.user.UserUpdateMyRequest;
-import com.hlh.hlhoj.model.dto.user.UserUpdateRequest;
+import com.hlh.hlhoj.model.dto.user.*;
 import com.hlh.hlhoj.model.entity.User;
+import com.hlh.hlhoj.model.enums.IsTeacherEnum;
 import com.hlh.hlhoj.model.vo.LoginUserVO;
 import com.hlh.hlhoj.model.vo.UserVO;
 import com.hlh.hlhoj.service.UserService;
@@ -24,12 +20,15 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.hlh.hlhoj.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -40,7 +39,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "134.175.223.105:6630", allowCredentials = "true")
 @Slf4j
 public class UserController {
-
+    private static final String CHECK="hlh";
     @Resource
     private UserService userService;
 
@@ -300,5 +299,74 @@ public class UserController {
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
+    }
+
+    /**
+     * 修改密码
+     * @param userPasswordRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/update/password")
+    public BaseResponse<Boolean> updatePassword(@RequestBody UserPasswordRequest userPasswordRequest,HttpServletRequest request){
+        if(userPasswordRequest==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if(userPasswordRequest.getOldUserPassword()!=userPasswordRequest.getCheckPassword()){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        //对用户的旧密码进行加密
+        String encryptPassword = DigestUtils.md5DigestAsHex((CHECK+ userPasswordRequest.getUserPassword()).getBytes());
+        if(loginUser.getUserPassword()!=encryptPassword){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User user =new User();
+        String[] ignore={"oldUserPassword","checkPassword"};
+        BeanUtils.copyProperties(userPasswordRequest,user,ignore);
+        user.setId(loginUser.getId());
+        boolean result = userService.updateById(user);
+        ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 注册班级
+     * @param classRegisterRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/update/classnum")
+    public BaseResponse<Boolean> updateClassNum(@RequestBody ClassRegisterRequest classRegisterRequest,HttpServletRequest request){
+        if (classRegisterRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        User user = new User();
+        BeanUtils.copyProperties(classRegisterRequest, user);
+        user.setId(loginUser.getId());
+        boolean result = userService.updateById(user);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 发送用户申请成为教师信息
+     * @param request
+     * @return
+     */
+    @GetMapping("/update/teacher")
+    public BaseResponse<Integer> RegisterTeacher(HttpServletRequest request){
+        User loginUser = userService.getLoginUser(request);
+        if(loginUser.getIsTeacher()== IsTeacherEnum.WAIT.getValue()){
+            return ResultUtils.success(IsTeacherEnum.WAIT.getValue());
+        }
+        if(loginUser.getIsTeacher()==IsTeacherEnum.TEACHER.getValue()){
+            return ResultUtils.success(IsTeacherEnum.TEACHER.getValue());
+        }
+        loginUser.setIsTeacher(IsTeacherEnum.WAIT.getValue());
+        boolean result = userService.updateById(loginUser);
+        ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(-1);
     }
 }

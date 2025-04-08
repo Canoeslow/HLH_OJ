@@ -4,7 +4,7 @@ import com.hlh.hlhoj.model.entity.QuestionSubmit;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
-* @author 李鱼皮
+* @author 韩橹航
 * @description 针对表【question_submit(题目提交)】的数据库操作Mapper
 * @createDate 2023-08-07 20:58:53
 * @Entity com.hlh.hlhoj.model.entity.QuestionSubmit

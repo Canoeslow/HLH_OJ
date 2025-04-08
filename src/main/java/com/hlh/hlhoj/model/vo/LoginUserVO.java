@@ -45,5 +45,15 @@ public class LoginUserVO implements Serializable {
      */
     private Date updateTime;
 
+    /**
+     * 电话号码
+     */
+    private String phoneNumber;
+
+    /**
+     * 班级
+     */
+    private Integer classNum;
+
     private static final long serialVersionUID = 1L;
 }

@@ -27,5 +27,10 @@ public interface UserConstant {
      */
     String BAN_ROLE = "ban";
 
+    /**
+     * 教师
+     */
+    String TEACHER_ROLE = "teacher";
+
     // endregion
 }
