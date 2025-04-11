@@ -253,13 +253,14 @@ public class UserController {
     }
 
     /**
-     * 分页获取用户封装列表
+     * 分页获取学生封装列表（仅限管理员）
      *
      * @param userQueryRequest
      * @param request
      * @return
      */
-    @PostMapping("/list/page/vo")
+    @PostMapping("/list/page/uservo")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest,
             HttpServletRequest request) {
         if (userQueryRequest == null) {
@@ -269,6 +270,7 @@ public class UserController {
         long size = userQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        userQueryRequest.setUserRole(UserConstant.DEFAULT_ROLE);
         Page<User> userPage = userService.page(new Page<>(current, size),
                 userService.getQueryWrapper(userQueryRequest));
         Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
@@ -277,7 +279,33 @@ public class UserController {
         return ResultUtils.success(userVOPage);
     }
 
-    // endregion
+    /**
+     * 分页获取教师封装列表（仅限管理员）
+     *
+     * @param userQueryRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/list/page/teachervo")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<UserVO>> listTeacherVOByPage(@RequestBody UserQueryRequest userQueryRequest,
+                                                       HttpServletRequest request) {
+        if (userQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long current = userQueryRequest.getCurrent();
+        long size = userQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        userQueryRequest.setUserRole(UserConstant.TEACHER_ROLE);
+        Page<User> userPage = userService.page(new Page<>(current, size),
+                userService.getQueryWrapper(userQueryRequest));
+        Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
+        List<UserVO> userVO = userService.getUserVO(userPage.getRecords());
+        userVOPage.setRecords(userVO);
+        return ResultUtils.success(userVOPage);
+    }
+
 
     /**
      * 更新个人信息
@@ -312,18 +340,21 @@ public class UserController {
         if(userPasswordRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if(userPasswordRequest.getOldUserPassword()!=userPasswordRequest.getCheckPassword()){
+        if(!userPasswordRequest.getUserPassword().equals(userPasswordRequest.getCheckPassword())){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
         //对用户的旧密码进行加密
-        String encryptPassword = DigestUtils.md5DigestAsHex((CHECK+ userPasswordRequest.getUserPassword()).getBytes());
-        if(loginUser.getUserPassword()!=encryptPassword){
+        String encryptPassword = DigestUtils.md5DigestAsHex((CHECK+ userPasswordRequest.getOldUserPassword()).getBytes());
+        if(!loginUser.getUserPassword().equals(encryptPassword)){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        //对用户的新密码进行加密
+        String newPassword = DigestUtils.md5DigestAsHex((CHECK+ userPasswordRequest.getUserPassword()).getBytes());
         User user =new User();
         String[] ignore={"oldUserPassword","checkPassword"};
         BeanUtils.copyProperties(userPasswordRequest,user,ignore);
+        user.setUserPassword(newPassword);
         user.setId(loginUser.getId());
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR);
@@ -368,5 +399,81 @@ public class UserController {
         boolean result = userService.updateById(loginUser);
         ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(-1);
+    }
+
+    /**
+     * 通过教师申请（仅管理员）
+     * @param request
+     * @return
+     */
+    @GetMapping("/update/teacherAdd")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Integer> RegisterTeacherAdd(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request){
+        User loginUser = userService.getLoginUser(request);
+        Long id = deleteRequest.getId();
+        User olduser = userService.getById(id);
+        ThrowUtils.throwIf(olduser==null,ErrorCode.NOT_FOUND_ERROR);
+        //仅管理员可以进行操作
+        if(!userService.isAdmin(request)){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        if(olduser.getIsTeacher()== IsTeacherEnum.TEACHER.getValue()){
+            return ResultUtils.success(IsTeacherEnum.TEACHER.getValue());
+        }
+        if(olduser.getIsTeacher()==IsTeacherEnum.NOTEACHER.getValue()){
+            return ResultUtils.success(IsTeacherEnum.NOTEACHER.getValue());
+        }
+        olduser.setIsTeacher(IsTeacherEnum.TEACHER.getValue());
+        boolean result = userService.updateById(olduser);
+        ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(-1);
+    }
+    /**
+     * 拒绝教师申请（仅管理员）
+     * @param request
+     * @return
+     */
+    @GetMapping("/update/teacherDelete")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Integer> RegisterTeacherDelete(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request){
+        User loginUser = userService.getLoginUser(request);
+        Long id = deleteRequest.getId();
+        User olduser = userService.getById(id);
+        ThrowUtils.throwIf(olduser==null,ErrorCode.NOT_FOUND_ERROR);
+        //仅管理员可以进行操作
+        if(!userService.isAdmin(request)){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        if(olduser.getIsTeacher()== IsTeacherEnum.TEACHER.getValue()){
+            return ResultUtils.success(IsTeacherEnum.TEACHER.getValue());
+        }
+        if(olduser.getIsTeacher()==IsTeacherEnum.NOTEACHER.getValue()){
+            return ResultUtils.success(IsTeacherEnum.NOTEACHER.getValue());
+        }
+        olduser.setIsTeacher(IsTeacherEnum.BANTEACHER.getValue());
+        boolean result = userService.updateById(olduser);
+        ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(-1);
+    }
+
+    /**
+     * 查看发送申请成为教师的申请（管理员）
+     */
+    @PostMapping("/get/registeTeacher")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<UserVO>> getRegisteTeacher(@RequestBody UserQueryRequest userQueryRequest,HttpServletRequest request){
+        if(userQueryRequest==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long current = userQueryRequest.getCurrent();
+        long size = userQueryRequest.getPageSize();
+        //限制爬虫
+        ThrowUtils.throwIf(size>20,ErrorCode.PARAMS_ERROR);
+        Page<User> userPage = userService.page(new Page<>(current, size),
+                userService.getQueryWrapper(userQueryRequest));
+        Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
+        List<UserVO> teacherRegist = userService.getUserVO(userPage.getRecords());
+        userVOPage.setRecords(teacherRegist);
+        return ResultUtils.success(userVOPage);
     }
 }

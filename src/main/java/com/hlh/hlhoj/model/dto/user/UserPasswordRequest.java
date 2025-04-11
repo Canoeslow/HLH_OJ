@@ -1,6 +1,7 @@
 package com.hlh.hlhoj.model.dto.user;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
  * 修改密码
  */
 @Data
+@EqualsAndHashCode
 public class UserPasswordRequest implements Serializable {
 
     /**

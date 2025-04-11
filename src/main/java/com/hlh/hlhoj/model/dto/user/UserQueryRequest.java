@@ -40,6 +40,10 @@ public class UserQueryRequest extends PageRequest implements Serializable {
      * 用户角色：user/admin/ban
      */
     private String userRole;
+    /**
+     * 用户的申请情况
+     */
+    private Integer isTeacher;
 
     private static final long serialVersionUID = 1L;
 }

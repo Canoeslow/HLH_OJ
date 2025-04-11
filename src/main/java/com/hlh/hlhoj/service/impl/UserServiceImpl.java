@@ -17,6 +17,7 @@ import com.hlh.hlhoj.model.vo.UserVO;
 import com.hlh.hlhoj.service.UserService;
 import com.hlh.hlhoj.utils.SqlUtils;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -87,7 +88,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (userAccount.length() < 4) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号错误");
         }
-        if (userPassword.length() < 8) {
+        if (userPassword.length() < 5) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
         }
         // 2. 加密
@@ -256,6 +257,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userRole = userQueryRequest.getUserRole();
         String sortField = userQueryRequest.getSortField();
         String sortOrder = userQueryRequest.getSortOrder();
+        Integer isTeacher = userQueryRequest.getIsTeacher();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(id != null, "id", id);
         queryWrapper.eq(StringUtils.isNotBlank(unionId), "unionId", unionId);
@@ -265,6 +267,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.like(StringUtils.isNotBlank(userName), "userName", userName);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
+        queryWrapper.eq(isTeacher!=null,"isTeacher",isTeacher);
         return queryWrapper;
     }
 }
