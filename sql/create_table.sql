@@ -47,6 +47,22 @@ create table if not exists question
     index idx_userId (userId)
 ) comment '题目' collate = utf8mb4_unicode_ci;
 
+--教师题目表
+create table if not exists teacher_question
+(
+    id bigint auto_increment comment 'id' primary key,
+    teacherId bigint not null comment '教师id',
+    classNum int(11) not null comment '班级号',
+    questionid bigint comment '题目id',
+    title varchar(512) comment '题目标题',
+    content text comment '题目内容',
+    textPath varchar(256) comment '文档路径',
+    createTime daetime default CURRENT_TIMESTAMP comment '创建时间',
+    endTime datetime comment '结束时间',
+    isDelete tinyint default 0 comment '是否删除',
+    index idx_id (id),
+    index idx_classNum (classNum)
+    )comment '教师题目创建' collate =utf8mb4_unicode_ci;
 
 -- 题目提交表
 create table if not exists question_submit
@@ -64,6 +80,22 @@ create table if not exists question_submit
     index idx_questionId (questionId),
     index idx_userId (userId)
 ) comment '题目提交表';
+
+-- 学生题目提交表
+create table if not exists student_question_submit
+(
+    id bigint auto_increment comment 'id' primary key,
+    textPath varchar(256) comment '文档路径',
+    questionId bigint comment 'code题目id',
+    tquestionId bigint not null comment '教师题目id',
+    classNum int(11) not null comment '班级',
+    crrateTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete tinyint default 0 not null comment '是否删除',
+    index idx_questionId (id);
+    index idx_tquestionId (tquestionId);
+    index idx_tcId (tquestionId,classNum)
+)comment '学生作业提交表';
 -- 帖子表
 create table if not exists post
 (

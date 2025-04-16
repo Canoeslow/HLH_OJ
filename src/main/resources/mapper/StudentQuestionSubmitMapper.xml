@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hlh.hlhoj.mapper.StudentQuestionSubmitMapper">
+
+    <resultMap id="BaseResultMap" type="com.hlh.hlhoj.model.entity.StudentQuestionSubmit">
+            <id property="id" column="id" />
+            <result property="textPath" column="textPath" />
+            <result property="questionId" column="questionId" />
+            <result property="tquestionId" column="tquestionId" />
+            <result property="classNum" column="classNum" />
+            <result property="crrateTime" column="crrateTime" />
+            <result property="updateTime" column="updateTime" />
+            <result property="isDelete" column="isDelete" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,textPath,questionId,tquestionId,classNum,crrateTime,
+        updateTime,isDelete
+    </sql>
+</mapper>
