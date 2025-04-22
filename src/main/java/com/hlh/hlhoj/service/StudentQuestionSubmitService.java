@@ -1,7 +1,9 @@
 package com.hlh.hlhoj.service;
 
+import com.hlh.hlhoj.model.dto.questionsubmit.TQuestionSubmitRequest;
 import com.hlh.hlhoj.model.entity.StudentQuestionSubmit;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hlh.hlhoj.model.entity.User;
 
 /**
 * @author ELEX
@@ -9,5 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2025-04-14 10:23:33
 */
 public interface StudentQuestionSubmitService extends IService<StudentQuestionSubmit> {
+
+    long doQuestionSubmit(TQuestionSubmitRequest tQuestionSubmitRequest, User loginUser);
 
 }

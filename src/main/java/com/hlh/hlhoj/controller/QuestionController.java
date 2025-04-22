@@ -85,7 +85,7 @@ public class QuestionController {
         boolean result = questionService.save(question);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         long newQuestionId = question.getId();
-        return ResultUtils.success(newQues tionId);
+        return ResultUtils.success(newQuestionId);
     }
 
     /**

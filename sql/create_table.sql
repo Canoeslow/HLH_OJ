@@ -88,6 +88,7 @@ create table if not exists student_question_submit
     textPath varchar(256) comment '文档路径',
     questionId bigint comment 'code题目id',
     tquestionId bigint not null comment '教师题目id',
+    Userid bigint not null comment '用户id',
     classNum int(11) not null comment '班级',
     crrateTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',

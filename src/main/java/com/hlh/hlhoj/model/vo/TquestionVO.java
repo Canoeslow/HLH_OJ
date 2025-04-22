@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.hlh.hlhoj.judge.codesandbox.model.JudgeInfo;
 import com.hlh.hlhoj.model.entity.QuestionSubmit;
 import com.hlh.hlhoj.model.entity.TeacherQuestion;
+import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.Date;
 
+@Data
 public class TquestionVO implements Serializable {
     /**
      * id
@@ -47,6 +49,13 @@ public class TquestionVO implements Serializable {
      */
     private Date endTime;
 
+    /**
+     * 用户昵称
+     */
+    private String userName;
+
+
+
     public static TeacherQuestion voToObj(TquestionVO tquestionVO) {
         if (tquestionVO == null) {
             return null;
@@ -67,6 +76,7 @@ public class TquestionVO implements Serializable {
         }
         TquestionVO TquestionVO = new TquestionVO();
         BeanUtils.copyProperties(tquestion, TquestionVO);
-        return questionSubmitVO;
+        return TquestionVO;
     }
+    private static final long serialVersionUID = 1L;
 }

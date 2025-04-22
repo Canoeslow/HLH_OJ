@@ -34,6 +34,12 @@ public class StudentQuestionSubmit implements Serializable {
      */
     private Long tquestionId;
 
+
+    /**
+     * 用户提交ID
+     */
+    private Long Userid;
+
     /**
      * 班级
      */

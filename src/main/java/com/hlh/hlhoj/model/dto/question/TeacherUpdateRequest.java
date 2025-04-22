@@ -1,26 +1,22 @@
 package com.hlh.hlhoj.model.dto.question;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Data
-public class TeacherQuestionRequest implements Serializable {
-
+public class TeacherUpdateRequest implements Serializable {
     /**
      * id
      */
     private Long id;
-
     /**
      * 班级号
      */
-    private List<Integer> classNum;
+    private Integer classNum;
 
     /**
      * 题目id
@@ -38,7 +34,12 @@ public class TeacherQuestionRequest implements Serializable {
     private String content;
 
     /**
-     * 开始时间
+     * 文档路径
+     */
+    private String textPath;
+
+    /**
+     * 创建时间
      */
     private Date createTime;
 
@@ -46,6 +47,4 @@ public class TeacherQuestionRequest implements Serializable {
      * 结束时间
      */
     private Date endTime;
-
-    private static final long serialVersionUID = 1L;
 }
