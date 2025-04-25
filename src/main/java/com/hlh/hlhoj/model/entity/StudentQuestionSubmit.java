@@ -56,6 +56,11 @@ public class StudentQuestionSubmit implements Serializable {
     private Date updateTime;
 
     /**
+     * 用户昵称
+     */
+    private String userName;
+
+    /**
      * 是否删除
      */
     @TableLogic

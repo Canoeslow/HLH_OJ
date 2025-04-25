@@ -4,6 +4,7 @@ import com.hlh.hlhoj.model.dto.questionsubmit.TQuestionSubmitRequest;
 import com.hlh.hlhoj.model.entity.StudentQuestionSubmit;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hlh.hlhoj.model.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
 * @author ELEX
@@ -12,6 +13,6 @@ import com.hlh.hlhoj.model.entity.User;
 */
 public interface StudentQuestionSubmitService extends IService<StudentQuestionSubmit> {
 
-    long doQuestionSubmit(TQuestionSubmitRequest tQuestionSubmitRequest, User loginUser);
+    long doQuestionSubmit(TQuestionSubmitRequest tQuestionSubmitRequest, User loginUser, MultipartFile file);
 
 }

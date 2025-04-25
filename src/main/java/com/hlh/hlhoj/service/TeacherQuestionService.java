@@ -6,6 +6,7 @@ import com.hlh.hlhoj.model.dto.question.TeacherQueryRequest;
 import com.hlh.hlhoj.model.entity.TeacherQuestion;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hlh.hlhoj.model.entity.User;
+import com.hlh.hlhoj.model.vo.TquestionText;
 import com.hlh.hlhoj.model.vo.TquestionVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,5 +26,5 @@ public interface TeacherQuestionService extends IService<TeacherQuestion> {
 
     Page<TquestionVO> getTeacherQuestionVOPage(Page<TeacherQuestion> questionPage, User loginUser);
 
-    TquestionVO getTeacherQuestionVO(TeacherQuestion tquestion,HttpServletRequest request);
+    TquestionText getTeacherQuestionVO(TeacherQuestion tquestion, HttpServletRequest request);
 }

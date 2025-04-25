@@ -1,19 +1,15 @@
 package com.hlh.hlhoj.model.vo;
 
-import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.hlh.hlhoj.judge.codesandbox.model.JudgeInfo;
-import com.hlh.hlhoj.model.entity.QuestionSubmit;
 import com.hlh.hlhoj.model.entity.TeacherQuestion;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class TquestionVO implements Serializable {
+public class TquestionText implements Serializable {
     /**
      * id
      */
@@ -54,10 +50,29 @@ public class TquestionVO implements Serializable {
      */
     private String userName;
 
+    /**
+     * 用户提交id
+     */
+    private Long userStudentSubmitId;
+
+    /**
+     * 教师文件题目文件
+     */
+    private String Teacherfileurl;
+
+    /**
+     * 学生文件提交
+     */
+    private String Studentfileurl;
+
+    /**
+     *
+     * @param tquestionVO
+     * @return
+     */
 
 
-
-    public static TeacherQuestion voToObj(TquestionVO tquestionVO) {
+    public static TeacherQuestion voToObj(TquestionText tquestionVO) {
         if (tquestionVO == null) {
             return null;
         }
@@ -71,11 +86,11 @@ public class TquestionVO implements Serializable {
      * @param tquestion
      * @return
      */
-    public static TquestionVO objToVo(TeacherQuestion tquestion) {
+    public static TquestionText objToVo(TeacherQuestion tquestion) {
         if (tquestion == null) {
             return null;
         }
-        TquestionVO TquestionVO = new TquestionVO();
+        TquestionText TquestionVO = new TquestionText();
         BeanUtils.copyProperties(tquestion, TquestionVO);
         return TquestionVO;
     }

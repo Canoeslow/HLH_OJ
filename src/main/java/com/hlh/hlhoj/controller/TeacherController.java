@@ -18,6 +18,7 @@ import com.hlh.hlhoj.model.dto.question.TeacherUpdateRequest;
 import com.hlh.hlhoj.model.entity.TeacherQuestion;
 import com.hlh.hlhoj.model.entity.User;
 import com.hlh.hlhoj.model.vo.QuestionVO;
+import com.hlh.hlhoj.model.vo.TquestionText;
 import com.hlh.hlhoj.model.vo.TquestionVO;
 import com.hlh.hlhoj.service.*;
 import com.hlh.hlhoj.utils.FileUtils;
@@ -173,7 +174,7 @@ public class TeacherController {
      * @return
      */
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateTquestion(@RequestBody TeacherUpdateRequest teacherUpdateRequest, HttpServletRequest request,MultipartFile file){
+    public BaseResponse<Boolean> updateTquestion(@RequestBody TeacherUpdateRequest teacherUpdateRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
         if(teacherUpdateRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -204,7 +205,7 @@ public class TeacherController {
      * @return
      */
     @GetMapping("/get/VO")
-    public BaseResponse<TquestionVO> getTQuestionVOById(long id,HttpServletRequest request){
+    public BaseResponse<TquestionText> getTQuestionVOById(long id, HttpServletRequest request){
         if(id<=0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
