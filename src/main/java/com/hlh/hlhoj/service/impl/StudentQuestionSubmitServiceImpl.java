@@ -1,7 +1,9 @@
 package com.hlh.hlhoj.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hlh.hlhoj.common.ErrorCode;
 import com.hlh.hlhoj.constant.UplodeFileConstant;
@@ -11,6 +13,7 @@ import com.hlh.hlhoj.model.entity.QuestionSubmit;
 import com.hlh.hlhoj.model.entity.StudentQuestionSubmit;
 import com.hlh.hlhoj.model.entity.TeacherQuestion;
 import com.hlh.hlhoj.model.entity.User;
+import com.hlh.hlhoj.model.vo.StudentQuestionSubmitVO;
 import com.hlh.hlhoj.service.QuestionService;
 import com.hlh.hlhoj.service.QuestionSubmitService;
 import com.hlh.hlhoj.service.StudentQuestionSubmitService;
@@ -22,9 +25,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 * @author ELEX
@@ -101,6 +107,25 @@ public class StudentQuestionSubmitServiceImpl extends ServiceImpl<StudentQuestio
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
         return index;
+    }
+
+    @Override
+    public Page<StudentQuestionSubmitVO> getStudentVOPage(Page<StudentQuestionSubmit> questionPage, User loginUser, HttpServletRequest request) {
+        List<StudentQuestionSubmit> records = questionPage.getRecords();
+        Page<StudentQuestionSubmitVO> studentVo = new Page<>(questionPage.getCurrent(), questionPage.getSize(), questionPage.getTotal());
+        if(CollectionUtils.isEmpty(records)){
+            return studentVo;
+        }
+        List<StudentQuestionSubmitVO> studentVolist = records.stream().map(StudentQuestionSubmit -> {
+            StudentQuestionSubmitVO studentQuestionSubmitVO = StudentQuestionSubmitVO.objToVo(StudentQuestionSubmit);
+            if(StudentQuestionSubmit.getTextPath()!=null){
+                String downloadurl = TeacherQuestionServiceImpl.generateDownloadUrlStudent(request, StudentQuestionSubmit.getId(), StudentQuestionSubmit.getTextPath());
+                studentQuestionSubmitVO.setStudentfileurl(downloadurl);
+            }
+            return studentQuestionSubmitVO;
+        }).collect(Collectors.toList());
+        studentVo.setRecords(studentVolist);
+        return studentVo;
     }
 }
 

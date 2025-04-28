@@ -61,6 +61,11 @@ public class StudentQuestionSubmit implements Serializable {
     private String userName;
 
     /**
+     * 学生分数
+     */
+    private Integer fenshu;
+
+    /**
      * 是否删除
      */
     @TableLogic

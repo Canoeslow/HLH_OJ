@@ -93,6 +93,7 @@ create table if not exists student_question_submit
     classNum int(11) not null comment '班级',
     crrateTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    fenshu int(11) comment '分数',
     isDelete tinyint default 0 not null comment '是否删除',
     index idx_questionId (id);
     index idx_tquestionId (tquestionId);
@@ -113,6 +114,39 @@ create table if not exists post
     isDelete   tinyint  default 0                 not null comment '是否删除',
     index idx_userId (userId)
 ) comment '帖子' collate = utf8mb4_unicode_ci;
+
+--用户论坛
+create table if not exists whChat
+(
+    id bigint auto_increment comment 'id' primary key,
+    userId bigint not null comment '创建用户 id',
+    textValue text not null comment '内容',
+    crrateTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    isDelete tinyint default 0 not null comment '是否删除',
+    index idx_userId(UserId)
+    )comment '用户论坛';
+
+--问题反馈
+create table if not exists UserFeedback
+(
+    id bigint auto_increment comment 'id' primary key,
+    questionText text not null comment '问题',
+    feedbackText text not null comment '答案',
+    crrateTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    isDelete tinyint default 0 not null comment '是否删除',
+    index idx_qestionId(id)
+    )comment '用户答疑';
+
+--资源表
+create table if not exists resource
+(
+    id bigint auto_increment comment 'id' primary key,
+    userId bigint not null comment '创建用户 id',
+    textPath varchar(256) not null comment '文档路径',
+    crrateTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    isDelete tinyint default 0 not null comment '是否删除',
+    index idx_id(id)
+    )comment '资源表';
 
 -- 帖子点赞表（硬删除）
 create table if not exists post_thumb

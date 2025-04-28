@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public class FileUtils {
 
@@ -102,6 +103,33 @@ public class FileUtils {
                     throw new BusinessException(ErrorCode.PARAMS_ERROR, "不支持的文件格式，仅支持 Word 和 PDF 文件");
                 }
             }
+        }
+        return null;
+    }
+
+    //教师上传资源
+    public static String UplodeResource(MultipartFile file,User loginUser){
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null) {
+                if (originalFilename.endsWith(".docx") || originalFilename.endsWith(".doc") ||
+                        originalFilename.endsWith(".pdf")) {
+                    int lastIndexOfDot = originalFilename.lastIndexOf('.');
+                    String fileExtension = lastIndexOfDot != -1? originalFilename.substring(lastIndexOfDot) : "";
+                    // 判断文件格式是否为 Word 或 PDF
+                    String saveDirectory="D/FileCache/Resource";
+                    File directory=new File(saveDirectory);
+                    if(!directory.exists()) {directory.mkdirs();}
+                    String newFilename=UUID.randomUUID().toString() +"_"+loginUser.getId()+fileExtension;
+                    File destFile =new File(directory,newFilename);
+                    try{
+                        file.transferTo(destFile);
+                    }catch (IOException e){
+                        throw new BusinessException(ErrorCode.SYSTEM_ERROR,"文件保存失败");
+                    }
+                    return newFilename;
+                } else {
+                    throw new BusinessException(ErrorCode.PARAMS_ERROR, "不支持的文件格式，仅支持 Word 和 PDF 文件");
+                }
         }
         return null;
     }

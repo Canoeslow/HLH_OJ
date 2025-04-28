@@ -107,10 +107,13 @@ public class TeacherQuestionServiceImpl extends ServiceImpl<TeacherQuestionMappe
         User teacher = userService.getById(teacherId);
         tquestionVO.setUserName(teacher.getUserName());
         tquestionVO.setUserStudentSubmitId(UserSubmitLog!=null?UserSubmitLog.getId():null);
+        if(one.getFenshu()!=null){
+            tquestionVO.setFenshu(one.getFenshu());
+        }
         return tquestionVO;
     }
 
-    private String generateDownloadUrl(HttpServletRequest request, Long questionId, String filePath) {
+    public  static String generateDownloadUrl(HttpServletRequest request, Long questionId, String filePath) {
         String baseUrl = getBaseUrl(request);
         try {
             // 对文件名进行编码处理
@@ -124,7 +127,7 @@ public class TeacherQuestionServiceImpl extends ServiceImpl<TeacherQuestionMappe
         }
     }
 
-    private String getBaseUrl(HttpServletRequest request) {
+    public static String getBaseUrl(HttpServletRequest request) {
         String scheme = request.getScheme();
         String serverName = request.getServerName();
         int serverPort = request.getServerPort();
@@ -132,13 +135,27 @@ public class TeacherQuestionServiceImpl extends ServiceImpl<TeacherQuestionMappe
         return scheme + "://" + serverName + ":" + serverPort + contextPath;
     }
 
-    private String generateDownloadUrlStudent(HttpServletRequest request, Long questionId, String filePath) {
+    public static String generateDownloadUrlStudent(HttpServletRequest request, Long questionId, String filePath) {
         String baseUrl = getBaseUrl(request);
         try {
             // 对文件名进行编码处理
             File file = new File(filePath);
             String encodedFileName = URLEncoder.encode(file.getName(), "UTF-8");
             return baseUrl + "/StudentQuestion/download/" + questionId + "?fileName=" + encodedFileName;
+        } catch (Exception e) {
+            // 处理编码异常
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String generateDownloadUrlResource(HttpServletRequest request,Long questionId, String filePath) {
+        String baseUrl = getBaseUrl(request);
+        try {
+            // 对文件名进行编码处理
+            File file = new File(filePath);
+            String encodedFileName = URLEncoder.encode(file.getName(), "UTF-8");
+            return baseUrl + "/TeacherResource/download/" + questionId + "?fileName=" + encodedFileName;
         } catch (Exception e) {
             // 处理编码异常
             e.printStackTrace();

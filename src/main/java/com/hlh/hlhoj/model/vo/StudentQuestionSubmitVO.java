@@ -1,49 +1,52 @@
 package com.hlh.hlhoj.model.vo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.hlh.hlhoj.model.entity.StudentQuestionSubmit;
 import com.hlh.hlhoj.model.entity.TeacherQuestion;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class TquestionText implements Serializable {
+public class StudentQuestionSubmitVO implements Serializable {
     /**
-     * id
+     * 提价id
      */
     private Long id;
 
     /**
-     * 班级号
+     * 文档路径
+     */
+    private String textPath;
+
+    /**
+     * code题目id
+     */
+    private Long questionId;
+
+    /**
+     * 教师题目id
+     */
+    private Long tquestionId;
+
+
+    /**
+     * 用户提交ID
+     */
+    private Long Userid;
+
+    /**
+     * 班级
      */
     private Integer classNum;
 
     /**
-     * 题目id
+     * 更新时间
      */
-    private Long questionid;
-
-    /**
-     * 题目标题
-     */
-    private String title;
-
-    /**
-     * 题目内容
-     */
-    private String content;
-
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 结束时间
-     */
-    private Date endTime;
+    private Date updateTime;
 
     /**
      * 用户昵称
@@ -51,38 +54,20 @@ public class TquestionText implements Serializable {
     private String userName;
 
     /**
-     * 用户提交id
-     */
-    private Long userStudentSubmitId;
-
-    /**
-     * 教师文件题目文件
-     */
-    private String Teacherfileurl;
-
-    /**
      * 学生文件提交
      */
     private String Studentfileurl;
-
 
     /**
      * 学生分数
      */
     private Integer fenshu;
 
-    /**
-     *
-     * @param tquestionVO
-     * @return
-     */
-
-
-    public static TeacherQuestion voToObj(TquestionText tquestionVO) {
+    public static StudentQuestionSubmit voToObj(StudentQuestionSubmitVO tquestionVO) {
         if (tquestionVO == null) {
             return null;
         }
-        TeacherQuestion tquestion = new TeacherQuestion();
+        StudentQuestionSubmit tquestion = new StudentQuestionSubmit();
         BeanUtils.copyProperties(tquestionVO, tquestion);
         return tquestion;
     }
@@ -92,11 +77,11 @@ public class TquestionText implements Serializable {
      * @param tquestion
      * @return
      */
-    public static TquestionText objToVo(TeacherQuestion tquestion) {
+    public static StudentQuestionSubmitVO objToVo(StudentQuestionSubmit tquestion) {
         if (tquestion == null) {
             return null;
         }
-        TquestionText TquestionVO = new TquestionText();
+        StudentQuestionSubmitVO TquestionVO = new StudentQuestionSubmitVO();
         BeanUtils.copyProperties(tquestion, TquestionVO);
         return TquestionVO;
     }
