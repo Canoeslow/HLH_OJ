@@ -19,8 +19,10 @@ import com.hlh.hlhoj.service.QuestionSubmitService;
 import com.hlh.hlhoj.service.StudentQuestionSubmitService;
 import com.hlh.hlhoj.mapper.StudentQuestionSubmitMapper;
 import com.hlh.hlhoj.service.TeacherQuestionService;
+import com.hlh.hlhoj.utils.FileDownUtils;
 import com.hlh.hlhoj.utils.FileUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,11 +46,10 @@ public class StudentQuestionSubmitServiceImpl extends ServiceImpl<StudentQuestio
     @Resource
     private QuestionSubmitService questionSubmitService;
     @Resource
+    @Lazy
     private TeacherQuestionService teacherQuestionService;
     @Resource
     private QuestionService questionService;
-    @Resource
-    private StudentQuestionSubmitService studentQuestionSubmitService;
     @Override
     public long doQuestionSubmit(TQuestionSubmitRequest tQuestionSubmitRequest, User loginUser, MultipartFile file) {
         if(tQuestionSubmitRequest.getTquestionId()==null){
@@ -92,7 +93,7 @@ public class StudentQuestionSubmitServiceImpl extends ServiceImpl<StudentQuestio
         QueryWrapper<StudentQuestionSubmit> queryWrapperStudent=new QueryWrapper<>();
         queryWrapperStudent.eq(ObjectUtils.isNotEmpty(loginUser.getId()),"userId",loginUser.getId());
         queryWrapperStudent.eq(ObjectUtils.isNotEmpty(tQuestionSubmitRequest.getTquestionId()),"tquestionId",tQuestionSubmitRequest.getTquestionId());
-        StudentQuestionSubmit one = studentQuestionSubmitService.getOne(queryWrapperStudent);
+        StudentQuestionSubmit one = this.getOne(queryWrapperStudent);
         boolean save=false;
         Long index;
         if(one!=null){
@@ -119,7 +120,7 @@ public class StudentQuestionSubmitServiceImpl extends ServiceImpl<StudentQuestio
         List<StudentQuestionSubmitVO> studentVolist = records.stream().map(StudentQuestionSubmit -> {
             StudentQuestionSubmitVO studentQuestionSubmitVO = StudentQuestionSubmitVO.objToVo(StudentQuestionSubmit);
             if(StudentQuestionSubmit.getTextPath()!=null){
-                String downloadurl = TeacherQuestionServiceImpl.generateDownloadUrlStudent(request, StudentQuestionSubmit.getId(), StudentQuestionSubmit.getTextPath());
+                String downloadurl = FileDownUtils.generateDownloadUrlStudent(request, StudentQuestionSubmit.getId(), StudentQuestionSubmit.getTextPath());
                 studentQuestionSubmitVO.setStudentfileurl(downloadurl);
             }
             return studentQuestionSubmitVO;

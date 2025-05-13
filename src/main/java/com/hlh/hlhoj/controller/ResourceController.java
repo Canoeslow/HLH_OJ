@@ -38,8 +38,9 @@ public class ResourceController {
     
     @PostMapping("/add")
     //老师管理员创建资源
-    public BaseResponse<Boolean> addResource(@RequestBody ResourceCreateRequest createRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
-        if(createRequest==null){
+    public BaseResponse<Boolean> addResource(@RequestPart("file") MultipartFile file,@RequestParam("title") String title,HttpServletRequest request){
+        log.info("收到文件：{}，大小：{}KB", file.getOriginalFilename(), file.getSize()/1024);
+        if(title==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
@@ -51,7 +52,7 @@ public class ResourceController {
              filename = FileUtils.UplodeResource(file, loginUser);
         }
         com.hlh.hlhoj.model.entity.Resource resource = new com.hlh.hlhoj.model.entity.Resource();
-        resource.setTitle(createRequest.getTitle());
+        resource.setTitle(title);
         resource.setTextpath(filename);
         resource.setUserid(loginUser.getId());
         resource.setCrratetime(new Date());
@@ -103,15 +104,15 @@ public class ResourceController {
     }
 
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateResource(@RequestBody ResourceCreateRequest createRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
-        if(createRequest==null){
+    public BaseResponse<Boolean> updateResource(@RequestPart("id") String id,@RequestPart("title") String title, HttpServletRequest request,@RequestPart("file") MultipartFile file){
+        if(title==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
         if(loginUser.getUserRole()== UserConstant.DEFAULT_ROLE||loginUser.getUserRole()==UserConstant.USER_LOGIN_STATE){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
-        com.hlh.hlhoj.model.entity.Resource resource = resourceService.getById(createRequest.getId());
+        com.hlh.hlhoj.model.entity.Resource resource = resourceService.getById(id);
         if(resource==null){
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }

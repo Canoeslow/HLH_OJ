@@ -8,6 +8,7 @@ import com.hlh.hlhoj.model.entity.User;
 import com.hlh.hlhoj.model.vo.ResourceVO;
 import com.hlh.hlhoj.service.ResourceService;
 import com.hlh.hlhoj.mapper.ResourceMapper;
+import com.hlh.hlhoj.utils.FileDownUtils;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
         List<ResourceVO> resourceVOS = records.stream().map(Resource -> {
             ResourceVO resourceVO = ResourceVO.objToVo(Resource);
             if (Resource.getTextpath() != null) {
-                String downloadurl = TeacherQuestionServiceImpl.generateDownloadUrlResource(request, Resource.getId(), Resource.getTextpath());
+                String downloadurl = FileDownUtils.generateDownloadUrlResource(request, Resource.getId(), Resource.getTextpath());
                 resourceVO.setTextpath(downloadurl);
             }
             return resourceVO;

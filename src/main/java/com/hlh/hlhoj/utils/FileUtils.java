@@ -26,7 +26,7 @@ public class FileUtils {
                     saveDirectory="D/FileCache/teacherQuestion";
                 }
                 if(loginUser.getUserRole()==UserConstant.DEFAULT_ROLE){
-                    saveDirectory="D/FileCache/studentSubmit";
+                    saveDirectory="D:\\\\FileCache\\\\studentSubmit";
                 }
                 File directory = new File(saveDirectory);
                 if(!directory.exists()){directory.mkdirs();}
@@ -59,7 +59,7 @@ public class FileUtils {
                     String fileExtension = lastIndexOfDot != -1? originalFilename.substring(lastIndexOfDot) : "";
                     // 判断文件格式是否为 Word 或 PDF
                     String saveDirectory="D/FileCache"; // 请替换为实际的保存目录
-                    saveDirectory="D/FileCache/teacherQuestion";
+                    saveDirectory="D:\\\\FileCache\\\\teacherQuestion";
                     File directory=new File(saveDirectory);
                     if(!directory.exists()) {directory.mkdirs();}
                     String newFilename=uuid.toString()+loginUser.getUserRole()+fileExtension;
@@ -88,7 +88,7 @@ public class FileUtils {
                     int lastIndexOfDot = originalFilename.lastIndexOf('.');
                     String fileExtension = lastIndexOfDot != -1? originalFilename.substring(lastIndexOfDot) : "";
                     // 判断文件格式是否为 Word 或 PDF
-                    String saveDirectory="D/FileCache/studentSubmit";
+                    String saveDirectory="D:\\\\FileCache\\\\studentSubmit";
                     File directory=new File(saveDirectory);
                     if(!directory.exists()) {directory.mkdirs();}
                     String newFilename=questionId+"_"+loginUser.getClassNum()+"_"+loginUser.getId()+fileExtension;
@@ -116,7 +116,7 @@ public class FileUtils {
                     int lastIndexOfDot = originalFilename.lastIndexOf('.');
                     String fileExtension = lastIndexOfDot != -1? originalFilename.substring(lastIndexOfDot) : "";
                     // 判断文件格式是否为 Word 或 PDF
-                    String saveDirectory="D/FileCache/Resource";
+                    String saveDirectory="D:\\\\FileCache\\\\Resource";
                     File directory=new File(saveDirectory);
                     if(!directory.exists()) {directory.mkdirs();}
                     String newFilename=UUID.randomUUID().toString() +"_"+loginUser.getId()+fileExtension;

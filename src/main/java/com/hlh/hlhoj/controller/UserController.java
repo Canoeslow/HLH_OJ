@@ -406,7 +406,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @GetMapping("/update/teacherAdd")
+    @PostMapping("/update/teacherAdd")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Integer> RegisterTeacherAdd(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request){
         User loginUser = userService.getLoginUser(request);
@@ -424,6 +424,7 @@ public class UserController {
             return ResultUtils.success(IsTeacherEnum.NOTEACHER.getValue());
         }
         olduser.setIsTeacher(IsTeacherEnum.TEACHER.getValue());
+        olduser.setUserRole(UserConstant.TEACHER_ROLE);
         boolean result = userService.updateById(olduser);
         ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(-1);
@@ -433,7 +434,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @GetMapping("/update/teacherDelete")
+    @PostMapping("/update/teacherDelete")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Integer> RegisterTeacherDelete(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request){
         User loginUser = userService.getLoginUser(request);

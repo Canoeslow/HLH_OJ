@@ -17,6 +17,7 @@ import com.hlh.hlhoj.service.StudentQuestionSubmitService;
 import com.hlh.hlhoj.service.TeacherQuestionService;
 import com.hlh.hlhoj.mapper.TeacherQuestionMapper;
 import com.hlh.hlhoj.service.UserService;
+import com.hlh.hlhoj.utils.FileDownUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -96,11 +97,11 @@ public class TeacherQuestionServiceImpl extends ServiceImpl<TeacherQuestionMappe
         String Studentfilename=one!=null?one.getTextPath():null;
         String teacherfilename = tquestion.getTextPath();
         // 生成教师文件下载链接
-        String teacherFileDownloadUrl = generateDownloadUrl(request, tquestion.getId(), teacherfilename);
+        String teacherFileDownloadUrl = FileDownUtils.generateDownloadUrl(request, tquestion.getId(), teacherfilename);
         tquestionVO.setTeacherfileurl(teacherFileDownloadUrl);
         // 生成学生文件下载链接
         if (Studentfilename != null) {
-            String studentFileDownloadUrl = generateDownloadUrlStudent(request, one.getId(), Studentfilename);
+            String studentFileDownloadUrl = FileDownUtils.generateDownloadUrlStudent(request, one.getId(), Studentfilename);
             tquestionVO.setStudentfileurl(studentFileDownloadUrl);
         }
         Long teacherId = tquestion.getTeacherId();
@@ -113,55 +114,6 @@ public class TeacherQuestionServiceImpl extends ServiceImpl<TeacherQuestionMappe
         return tquestionVO;
     }
 
-    public  static String generateDownloadUrl(HttpServletRequest request, Long questionId, String filePath) {
-        String baseUrl = getBaseUrl(request);
-        try {
-            // 对文件名进行编码处理
-            File file = new File(filePath);
-            String encodedFileName = URLEncoder.encode(file.getName(), "UTF-8");
-            return baseUrl + "/teacherQuestion/download/" + questionId + "?fileName=" + encodedFileName;
-        } catch (Exception e) {
-            // 处理编码异常
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static String getBaseUrl(HttpServletRequest request) {
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        int serverPort = request.getServerPort();
-        String contextPath = request.getContextPath();
-        return scheme + "://" + serverName + ":" + serverPort + contextPath;
-    }
-
-    public static String generateDownloadUrlStudent(HttpServletRequest request, Long questionId, String filePath) {
-        String baseUrl = getBaseUrl(request);
-        try {
-            // 对文件名进行编码处理
-            File file = new File(filePath);
-            String encodedFileName = URLEncoder.encode(file.getName(), "UTF-8");
-            return baseUrl + "/StudentQuestion/download/" + questionId + "?fileName=" + encodedFileName;
-        } catch (Exception e) {
-            // 处理编码异常
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static String generateDownloadUrlResource(HttpServletRequest request,Long questionId, String filePath) {
-        String baseUrl = getBaseUrl(request);
-        try {
-            // 对文件名进行编码处理
-            File file = new File(filePath);
-            String encodedFileName = URLEncoder.encode(file.getName(), "UTF-8");
-            return baseUrl + "/TeacherResource/download/" + questionId + "?fileName=" + encodedFileName;
-        } catch (Exception e) {
-            // 处理编码异常
-            e.printStackTrace();
-            return null;
-        }
-    }
 }
 
 

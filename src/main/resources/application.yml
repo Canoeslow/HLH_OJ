@@ -102,3 +102,10 @@ knife4j:
 # 代码沙箱的相关配置
 codesandbox:
   type: remote
+
+  spring:
+    servlet:
+      multipart:
+        enabled: true
+        max-file-size: 50MB
+        max-request-size: 50MB

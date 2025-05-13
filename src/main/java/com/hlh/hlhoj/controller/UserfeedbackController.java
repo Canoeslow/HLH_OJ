@@ -1,5 +1,6 @@
 package com.hlh.hlhoj.controller;
 
+import com.hlh.hlhoj.annotation.AuthCheck;
 import com.hlh.hlhoj.common.BaseResponse;
 import com.hlh.hlhoj.common.ErrorCode;
 import com.hlh.hlhoj.common.ResultUtils;
@@ -38,14 +39,12 @@ public class UserfeedbackController {
      * @return
      */
     @PostMapping("/add")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> addFeedback(@RequestBody CreateFeedBackRequest createFeedBackRequest, HttpServletRequest request){
         if(createFeedBackRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
-        if(loginUser.getUserRole()!= UserConstant.ADMIN_ROLE){
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
         Userfeedback userfeedback = new Userfeedback();
         userfeedback.setQuestiontext(createFeedBackRequest.getQuestiontext());
         userfeedback.setFeedbacktext(createFeedBackRequest.getFeedbacktext());
@@ -58,14 +57,12 @@ public class UserfeedbackController {
     }
 
     @PostMapping("/delete")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteFeedback(@RequestBody deleteFeedbackRequest deleteFeedbackRequest, HttpServletRequest request){
         if(deleteFeedbackRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
-        if(loginUser.getUserRole()!= UserConstant.ADMIN_ROLE){
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
         Userfeedback userfeedbackServiceById = userfeedbackService.getById(deleteFeedbackRequest.getId());
         if(userfeedbackServiceById==null){
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
@@ -78,14 +75,12 @@ public class UserfeedbackController {
     }
 
     @PostMapping("/update")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateFeedback(@RequestBody CreateFeedBackRequest createFeedBackRequest, HttpServletRequest request){
         if(createFeedBackRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
-        if(loginUser.getUserRole()!= UserConstant.ADMIN_ROLE){
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
         Userfeedback userfeedback = new Userfeedback();
         userfeedback.setId(createFeedBackRequest.getId());
         userfeedback.setQuestiontext(createFeedBackRequest.getQuestiontext());
@@ -100,9 +95,6 @@ public class UserfeedbackController {
     @GetMapping("/list")
     public BaseResponse<List<Userfeedback>> getAllFeedback(HttpServletRequest request){
         User loginUser = userService.getLoginUser(request);
-        if(loginUser.getUserRole()!= UserConstant.ADMIN_ROLE){
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
         List<Userfeedback> list = userfeedbackService.list();
         return ResultUtils.success(list);
     }
