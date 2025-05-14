@@ -31,6 +31,10 @@ public class ResourceVO implements Serializable {
      * 资源标题
      */
     private String title;
+    /**
+     * 用户名
+     */
+    private String userName;
     private static final long serialVersionUID = 1L;
 
     public static Resource voToObj(ResourceVO tquestionVO) {

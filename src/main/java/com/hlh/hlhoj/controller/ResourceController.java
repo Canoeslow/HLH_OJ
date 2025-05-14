@@ -104,7 +104,7 @@ public class ResourceController {
     }
 
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateResource(@RequestPart("id") String id,@RequestPart("title") String title, HttpServletRequest request,@RequestPart("file") MultipartFile file){
+    public BaseResponse<Boolean> updateResource(@RequestPart("file") MultipartFile file,@RequestParam("id") String id,@RequestParam("title") String title, HttpServletRequest request){
         if(title==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

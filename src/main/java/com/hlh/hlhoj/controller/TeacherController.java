@@ -66,7 +66,7 @@ public class TeacherController {
      */
     @PostMapping("/add")
     @AuthCheck(mustRole = UserConstant.TEACHER_ROLE)
-    public BaseResponse<Boolean> addTQuestion(@RequestBody TeacherQuestionRequest teacherQuestionRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
+    public BaseResponse<Boolean> addTQuestion(@RequestParam TeacherQuestionRequest teacherQuestionRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
         if(teacherQuestionRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -174,7 +174,7 @@ public class TeacherController {
      * @return
      */
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateTquestion(@RequestBody TeacherUpdateRequest teacherUpdateRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
+    public BaseResponse<Boolean> updateTquestion(@RequestParam TeacherUpdateRequest teacherUpdateRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
         if(teacherUpdateRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

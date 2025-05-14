@@ -8,7 +8,10 @@ import com.hlh.hlhoj.model.entity.User;
 import com.hlh.hlhoj.model.vo.ResourceVO;
 import com.hlh.hlhoj.service.ResourceService;
 import com.hlh.hlhoj.mapper.ResourceMapper;
+import com.hlh.hlhoj.service.UserService;
 import com.hlh.hlhoj.utils.FileDownUtils;
+import org.apache.ibatis.annotations.Update;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +26,8 @@ import java.util.stream.Collectors;
 @Service
 public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
     implements ResourceService{
+    @Autowired
+    private UserService userService;
 
     @Override
     public Page<ResourceVO> getResourceVOpage(Page<Resource> questionPage, User loginUser, HttpServletRequest request) {
@@ -35,7 +40,9 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource>
             ResourceVO resourceVO = ResourceVO.objToVo(Resource);
             if (Resource.getTextpath() != null) {
                 String downloadurl = FileDownUtils.generateDownloadUrlResource(request, Resource.getId(), Resource.getTextpath());
+                User ResourceUser = userService.getById(resourceVO.getUserid());
                 resourceVO.setTextpath(downloadurl);
+                resourceVO.setUserName(ResourceUser.getUserName());
             }
             return resourceVO;
         }).collect(Collectors.toList());
