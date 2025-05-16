@@ -55,6 +55,7 @@ public class StudentQuestionSubmitServiceImpl extends ServiceImpl<StudentQuestio
         if(tQuestionSubmitRequest.getTquestionId()==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+
         TeacherQuestion question = teacherQuestionService.getById(tQuestionSubmitRequest.getTquestionId());
         if(question==null){
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
@@ -88,7 +89,10 @@ public class StudentQuestionSubmitServiceImpl extends ServiceImpl<StudentQuestio
         studentQuestionSubmit.setTextPath(filename);
         studentQuestionSubmit.setCrrateTime(new Date());
         studentQuestionSubmit.setUpdateTime(new Date());
-        studentQuestionSubmit.setQuestionId(UserSubmitLog.getId());
+        studentQuestionSubmit.setTeacherId(question.getTeacherId());
+        if(UserSubmitLog!=null){
+            studentQuestionSubmit.setQuestionId(UserSubmitLog.getId());
+        }
         studentQuestionSubmit.setUserName(loginUser.getUserName());
         QueryWrapper<StudentQuestionSubmit> queryWrapperStudent=new QueryWrapper<>();
         queryWrapperStudent.eq(ObjectUtils.isNotEmpty(loginUser.getId()),"userId",loginUser.getId());

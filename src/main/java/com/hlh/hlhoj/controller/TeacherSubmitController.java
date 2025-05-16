@@ -54,14 +54,25 @@ public class TeacherSubmitController {
      * @return
      */
     @PostMapping("/doTQuestionSubmit")
-    public BaseResponse<Long> doTQuestionSubmit(@RequestBody TQuestionSubmitRequest submitRequestion, HttpServletRequest request,@RequestPart("file") MultipartFile file) {
-        if(submitRequestion==null || submitRequestion.getQuestionId()<=0){
+    public BaseResponse<Long> doTQuestionSubmit(        @RequestParam("questionId") Long questionId,
+                                                        @RequestParam("tquestionId") Long tquestionId,
+                                                        @RequestParam("classNum") Integer classNum,
+                                                        @RequestPart("file") MultipartFile file,
+                                                    HttpServletRequest request) {
+        if(questionId==null || questionId<=0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
-        if(loginUser.getUserRole()!= UserConstant.DEFAULT_ROLE){
+        if(!loginUser.getUserRole().equals(UserConstant.DEFAULT_ROLE)){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"只有学生可以做题");
         }
+        if(loginUser.getClassNum()==null){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"学生不在对应班级");
+        }
+        TQuestionSubmitRequest submitRequestion = new TQuestionSubmitRequest();
+        submitRequestion.setQuestionId(questionId);
+        submitRequestion.setTquestionId(tquestionId);
+        submitRequestion.setClassNum(classNum);
         long resultid = studentQuestionSubmitService.doQuestionSubmit(submitRequestion, loginUser, file);
         return ResultUtils.success(resultid);
     }
@@ -76,14 +87,18 @@ public class TeacherSubmitController {
     public BaseResponse<Page<StudentQuestionSubmitVO>> getListSubmit(@RequestBody StudentQueryRequest studentQueryRequest, HttpServletRequest request){
         //只有老师和管理员可以查看
         User loginUser = userService.getLoginUser(request);
-        if(loginUser.getUserRole()==UserConstant.DEFAULT_ROLE||loginUser.getUserRole()==UserConstant.USER_LOGIN_STATE){
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
         long current = studentQueryRequest.getCurrent();
         long size = studentQueryRequest.getPageSize();
         //限制爬虫
         ThrowUtils.throwIf(size>20,ErrorCode.PARAMS_ERROR);
         QueryWrapper<StudentQuestionSubmit> queryWrapper=new QueryWrapper<>();
+        if(loginUser.getUserRole().equals(UserConstant.DEFAULT_ROLE)){
+            queryWrapper.eq(ObjectUtils.isNotEmpty(loginUser.getClassNum()),"classNum",loginUser.getClassNum());
+            queryWrapper.eq(ObjectUtils.isNotEmpty(loginUser.getId()),"Userid",loginUser.getId());
+        }
+        if(loginUser.getUserRole().equals(UserConstant.TEACHER_ROLE)){
+            queryWrapper.eq(ObjectUtils.isNotEmpty(loginUser.getId()),"teacherId",loginUser.getId());
+        }
         if(studentQueryRequest!=null){
             Date crrateTime = studentQueryRequest.getCrrateTime();
             queryWrapper.gt(ObjectUtils.isNotEmpty(crrateTime),"crrateTime",crrateTime);

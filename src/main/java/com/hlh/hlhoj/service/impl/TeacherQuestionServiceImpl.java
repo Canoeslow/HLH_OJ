@@ -56,7 +56,7 @@ public class TeacherQuestionServiceImpl extends ServiceImpl<TeacherQuestionMappe
         Date createTime = teacherQueryRequest.getCreateTime();
         Date endTime = teacherQueryRequest.getEndTime();
         queryWrapper.eq(ObjectUtils.isNotEmpty(id),"teacherId",id);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(classNum),"classNum",classNum);
+        queryWrapper.eq("classNum",classNum==null?0:classNum);
         queryWrapper.eq("isDelete",false);
         if(createTime!=null&&endTime!=null){
             queryWrapper.between("createTime",createTime,endTime);
@@ -108,9 +108,6 @@ public class TeacherQuestionServiceImpl extends ServiceImpl<TeacherQuestionMappe
         User teacher = userService.getById(teacherId);
         tquestionVO.setUserName(teacher.getUserName());
         tquestionVO.setUserStudentSubmitId(UserSubmitLog!=null?UserSubmitLog.getId():null);
-        if(one.getFenshu()!=null){
-            tquestionVO.setFenshu(one.getFenshu());
-        }
         return tquestionVO;
     }
 

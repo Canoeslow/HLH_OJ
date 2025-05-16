@@ -65,12 +65,14 @@ public class TeacherController {
      * @return
      */
     @PostMapping("/add")
-    @AuthCheck(mustRole = UserConstant.TEACHER_ROLE)
-    public BaseResponse<Boolean> addTQuestion(@RequestParam TeacherQuestionRequest teacherQuestionRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
+    public BaseResponse<Boolean> addTQuestion(@RequestPart("teacherQuestionRequest") TeacherQuestionRequest teacherQuestionRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
         if(teacherQuestionRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
+        if(!loginUser.getUserRole().equals(UserConstant.ADMIN_ROLE)&&!loginUser.getUserRole().equals(UserConstant.TEACHER_ROLE)){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
         String filename=new String();
         //创建题目的时候附带题目处理文件上传
         if (!file.isEmpty()) {
@@ -102,13 +104,10 @@ public class TeacherController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
-        if(loginUser.getUserRole()!=UserConstant.TEACHER_ROLE&&loginUser.getUserRole()!=UserConstant.DEFAULT_ROLE){
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
-        if(loginUser.getUserRole()==UserConstant.TEACHER_ROLE){
+        if(loginUser.getUserRole().equals(UserConstant.TEACHER_ROLE)){
             teacherQueryRequest.setId(loginUser.getId());
         }
-        if(loginUser.getUserRole()==UserConstant.DEFAULT_ROLE){
+        if(loginUser.getUserRole().equals(UserConstant.DEFAULT_ROLE)){
             teacherQueryRequest.setClassNum(loginUser.getClassNum());
         }
         long current = teacherQueryRequest.getCurrent();
@@ -174,7 +173,7 @@ public class TeacherController {
      * @return
      */
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateTquestion(@RequestParam TeacherUpdateRequest teacherUpdateRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
+    public BaseResponse<Boolean> updateTquestion(@RequestPart("teacherUpdateRequest") TeacherUpdateRequest teacherUpdateRequest, HttpServletRequest request,@RequestPart("file") MultipartFile file){
         if(teacherUpdateRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -182,7 +181,7 @@ public class TeacherController {
         Long id = teacherUpdateRequest.getId();
         TeacherQuestion oldQuestion = teacherQuestionService.getById(id);
         ThrowUtils.throwIf(oldQuestion==null,ErrorCode.NOT_FOUND_ERROR);
-        if(loginUser.getId()!=oldQuestion.getTeacherId()||loginUser.getUserRole()!=UserConstant.ADMIN_ROLE){
+        if(loginUser.getId()!=oldQuestion.getTeacherId()&&!loginUser.getUserRole().equals(UserConstant.ADMIN_ROLE)){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         String filename=new String();
@@ -191,7 +190,8 @@ public class TeacherController {
         }
         TeacherQuestion teacherQuestion = new TeacherQuestion();
         BeanUtils.copyProperties(teacherUpdateRequest,teacherQuestion);
-        if(filename!=null){
+        teacherQuestion.setTextPath(oldQuestion.getTextPath());
+        if(filename!=""){
             teacherQuestion.setTextPath(filename);
         }
         boolean result = teacherQuestionService.updateById(teacherQuestion);
