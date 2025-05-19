@@ -29,24 +29,37 @@ public class FileDownLoadUserControl {
     private StudentQuestionSubmitService studentQuestionSubmitService;
 
     @GetMapping("/download/{questionId}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long questionId, @RequestParam String fileName){
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long questionId, @RequestParam String fileName) {
         TeacherQuestion question = teacherQuestionService.getById(questionId);
-        if(question==null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        if (question == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "实验任务不存在");
         }
-        String teacherBase="D/FileCache/studentSubmit/";
-        String textPath = teacherBase+question.getTextPath();
+
+        String teacherBase = "D:/FileCache/studentSubmit/";  // ✅ 注意路径拼接用 /，不是 D/FileCache
+        String textPath = teacherBase + question.getTextPath();
         File file = new File(textPath);
-        if(!file.exists()){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        if (!file.exists()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件不存在");
         }
+
         FileSystemResource fileSystemResource = new FileSystemResource(file);
+
+        // ✅ 文件名转码（防止中文乱码）
+        String encodedFileName;
+        try {
+            encodedFileName = java.net.URLEncoder.encode(file.getName(), "UTF-8");
+        } catch (Exception e) {
+            encodedFileName = file.getName();  // 回退
+        }
+
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName());
+        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + encodedFileName);
+        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
+
         return ResponseEntity.ok()
                 .headers(httpHeaders)
                 .contentLength(file.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(fileSystemResource);
     }
+
 }

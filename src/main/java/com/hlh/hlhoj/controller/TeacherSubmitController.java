@@ -119,7 +119,7 @@ public class TeacherSubmitController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User loginUser = userService.getLoginUser(request);
-        if(loginUser.getUserRole()==UserConstant.DEFAULT_ROLE){
+        if(loginUser.getUserRole().equals(UserConstant.DEFAULT_ROLE)){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         Long id = fenshuRequest.getId();
